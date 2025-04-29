@@ -1,27 +1,25 @@
 name: Welcome New Contributor
-
 on:
   pull_request:
     types: [opened]
-
-permissions:
-  pull-requests: write  # 👈 This line gives permission to comment on pull requests
-
 jobs:
   welcome:
     runs-on: ubuntu-latest
-
+    permissions:
+      pull-requests: write  # Explicitly grant write permissions for pull requests
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Comment on PR
       uses: actions/github-script@v7
       with:
         script: |
           github.rest.issues.createComment({
-            issue_number: context.issue.number,
+            issue_number: context.payload.pull_request.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `Welcome to the project, @${{ github.actor }}! Thank you for your first pull request! 
-          })
+            body: `Welcome to the project, @${{ github.actor }}! Thank you for your first pull request!`
+          })
